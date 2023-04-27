@@ -19,14 +19,17 @@ public class PlayerMovement : MonoBehaviour
     private bool isFacingRight = true;
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float jumpForce = 14f;
-   
+
 
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
 
-    private bool doubleJump;
+    private bool isDoubleJumping = false;
+    private bool isJumping = false;
+    private bool isFalling;
+    private float jumpCounter;
 
     private bool canDash = true;
     private bool isDashing;
@@ -41,10 +44,10 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpingDirection;
     private float wallJumpingTime = 0.2f;
     private float wallJumpingCounter;
-    private float wallJumpingDuration = 0.4f;
-    private Vector2 wallJumpingPower = new Vector2(8f, 16f);
+    private float wallJumpingDuration = 0.2f;
+    private Vector2 wallJumpingPower = new Vector2(10f, 12f);
 
-    private enum MovementState { idle, running, jumping, falling, wallSliding }
+    private enum MovementState { idle, running, jumping, falling, wallSliding, doubleJump }
 
     [SerializeField] private AudioSource jumpSoundEffect;
     [SerializeField] private AudioSource dashSoundEffect;
@@ -72,6 +75,14 @@ public class PlayerMovement : MonoBehaviour
             UpdateAnimationState();
             return;
         }
+        if (isWallJumping)
+        {
+            UpdateAnimationState();
+            return;
+        }
+
+        // Checks if the player is falling
+        isFalling = rb.velocity.y < 0f;
 
         // Checks which direction the player is moving
         dirX = Input.GetAxisRaw("Horizontal");
@@ -100,22 +111,25 @@ public class PlayerMovement : MonoBehaviour
 
         if (IsGrounded() && !Input.GetButton("Jump"))
         {
-            doubleJump = false;
+            isJumping = false;
+            isDoubleJumping = false;
+            tr.emitting = false;
         }
 
         // Jump logic
-        if (jumpBufferCounter > 0f)
+        if (jumpBufferCounter > 0f && CanJump())
         {
-            if (coyoteTimeCounter > 0f || doubleJump)
+            jumpSoundEffect.Play();
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpBufferCounter = 0f;
+            if (isDoubleJumping)
             {
-                jumpSoundEffect.Play();
-                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-                jumpBufferCounter = 0f;
-                doubleJump = !doubleJump;
+                tr.emitting = true;
             }
-            
+
         }
 
+        // Cut Jump Short
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
@@ -156,7 +170,12 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (rb.velocity.y < -.1f)
         {
-            state = MovementState.falling; 
+            state = MovementState.falling;
+        }
+
+        if (isDoubleJumping)
+        {
+            state = MovementState.doubleJump;
         }
 
         if (isWallSliding)
@@ -184,9 +203,10 @@ public class PlayerMovement : MonoBehaviour
         if (IsWalled() && !IsGrounded() && dirX != 0)
         {
             isWallSliding = true;
-            doubleJump = true;
+            isJumping = false;
+            isDoubleJumping = false;
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
-        } 
+        }
         else
         {
             isWallSliding = false;
@@ -208,13 +228,11 @@ public class PlayerMovement : MonoBehaviour
             wallJumpingCounter -= Time.deltaTime;
         }
 
-        if (Input.GetButtonDown("Jump") && wallJumpingCounter > 0f)
+        if (Input.GetButtonDown("Jump") && CanJump())
         {
             isWallJumping = true;
             rb.velocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             wallJumpingCounter = 0f;
-
-            // if (transform.localScale.x != wallJumpingDirection)
 
             Invoke(nameof(StopWallJumping), wallJumpingDuration);
         }
@@ -253,5 +271,47 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
+    }
+
+    /* After double jumping, return to the falling state
+    private void AfterDouble()
+    {
+        isDoubleJumping = false;
+    } */
+
+    private bool CanJump()
+    {
+        if (!isDoubleJumping)
+        {
+            if (isWallSliding && wallJumpingCounter > 0f)
+            {
+                return true;
+            }
+            else if (jumpBufferCounter > 0f)
+            {
+                if (coyoteTimeCounter > 0f)
+                {
+                    isJumping = true;
+                    return true;
+                }
+                else if (isJumping || isFalling)
+                {
+                    isDoubleJumping = true;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 }
