@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 2745552151776956434}
   - component: {fileID: 7966545519109747984}
   - component: {fileID: 3202473781170718368}
+  - component: {fileID: 3906119875118169648}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -66,7 +67,6 @@ MonoBehaviour:
   wallCheck: {fileID: 7587216195092255454}
   moveSpeed: 7
   jumpForce: 14
-  fallingGravity: 10
   jumpSoundEffect: {fileID: 1638256408784491407}
   dashSoundEffect: {fileID: 7966545519109747984}
 --- !u!212 &2384155720420736551
@@ -225,7 +225,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2d723a7535f6f4b9543f418bc2715f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cherriesText: {fileID: 0}
+  cardsText: {fileID: 0}
+  livesText: {fileID: 0}
+  playerLife: {fileID: 0}
   collectionSoundEffect: {fileID: 958680734077188459}
 --- !u!114 &2074462998207494680
 MonoBehaviour:
@@ -241,6 +243,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathSoundEffect: {fileID: 2745552151776956434}
   player: {fileID: 0}
+  respawn: {fileID: 0}
+  numLives: 3
   isAlive: 1
 --- !u!82 &1638256408784491407
 AudioSource:
@@ -739,6 +743,21 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &3906119875118169648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131624151482000541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f9f4f7e3365b641b1156469d035cbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5937558499679115605}
+  respawn: {fileID: 0}
+  checkpoint: {fileID: 0}
 --- !u!1 &3187267824248896775
 GameObject:
   m_ObjectHideFlags: 0

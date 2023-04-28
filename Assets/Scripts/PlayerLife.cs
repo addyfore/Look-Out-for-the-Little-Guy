@@ -11,7 +11,9 @@ public class PlayerLife : MonoBehaviour
 
     [SerializeField] private AudioSource deathSoundEffect;
     [SerializeField] private Transform player;
+    [SerializeField] private Transform respawn;
 
+    [SerializeField] public int numLives = 3;
     public bool isAlive = true;
 
     private void Start()
@@ -24,16 +26,35 @@ public class PlayerLife : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Trap") || player.transform.position.y < -4f)
         {
-            isAlive = false;
             Die();
         }
     }
 
     private void Die()
     {
+        if (numLives < 0)
+        {
+            isAlive = false;
+        }
         deathSoundEffect.Play();
         rb.bodyType = RigidbodyType2D.Static;
         anim.SetTrigger("death");
+    }
+
+    private void ResetCharacter()
+    {
+        if (numLives > 0)
+        {
+            player.position = new Vector3(respawn.position.x, respawn.position.y, player.position.z);
+            anim.ResetTrigger("death");
+            anim.SetTrigger("respawn");
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            numLives--;
+        }
+        else
+        {
+            RestartLevel();
+        }
     }
 
     private void RestartLevel()

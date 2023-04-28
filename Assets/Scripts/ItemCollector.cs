@@ -8,8 +8,14 @@ public class ItemCollector : MonoBehaviour
     private int cards = 0;
 
     [SerializeField] private Text cardsText;
-
+    [SerializeField] private Text livesText;
+    [SerializeField] private PlayerLife playerLife;
     [SerializeField] private AudioSource collectionSoundEffect;
+
+    private void Update()
+    {
+        livesText.text = "Lives: " + playerLife.numLives;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
