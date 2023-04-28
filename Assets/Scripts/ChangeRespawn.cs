@@ -5,14 +5,18 @@ using UnityEngine;
 public class ChangeRespawn : MonoBehaviour
 {
     [SerializeField] private Transform player;
-    [SerializeField] private Transform respawn;
-    [SerializeField] private Transform checkpoint;
+    [SerializeField] private GameObject[] checkpoints;
+
+    [HideInInspector] public float respawnX;
+    [HideInInspector] public float respawnY;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Respawn"))
         {
-            respawn.position = new Vector3(player.position.x, checkpoint.position.y, respawn.position.z);
+            respawnX = checkpoints[int.Parse(collision.gameObject.name)].transform.position.x;
+            respawnY = checkpoints[int.Parse(collision.gameObject.name)].transform.position.y;
+
         }
     }
 }

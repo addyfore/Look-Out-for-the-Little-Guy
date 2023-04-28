@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Finish : MonoBehaviour
 {
+    [SerializeField] private ItemCollector itemCollector;
 
     private AudioSource finishSound;
     private Animator anim;
@@ -19,7 +20,7 @@ public class Finish : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "Player" && !levelCompleted)
+        if (collision.gameObject.name == "Player" && !levelCompleted && itemCollector.cards == 5)
         {
             finishSound.Play();
             levelCompleted = true;

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ItemCollector : MonoBehaviour
 {
-    private int cards = 0;
+    [HideInInspector] public int cards = 0;
 
     [SerializeField] private Text cardsText;
     [SerializeField] private Text livesText;
@@ -24,7 +24,7 @@ public class ItemCollector : MonoBehaviour
             collectionSoundEffect.Play();
             Destroy(collision.gameObject);
             cards++;
-            cardsText.text = "Cards:" + cards;
+            cardsText.text = "Cards:" + cards + "/5";
         }
     }
 }

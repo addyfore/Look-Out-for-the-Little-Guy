@@ -11,7 +11,7 @@ public class PlayerLife : MonoBehaviour
 
     [SerializeField] private AudioSource deathSoundEffect;
     [SerializeField] private Transform player;
-    [SerializeField] private Transform respawn;
+    [SerializeField] private ChangeRespawn changeRespawn;
 
     [SerializeField] public int numLives = 3;
     public bool isAlive = true;
@@ -45,7 +45,7 @@ public class PlayerLife : MonoBehaviour
     {
         if (numLives > 0)
         {
-            player.position = new Vector3(respawn.position.x, respawn.position.y, player.position.z);
+            player.position = new Vector3(changeRespawn.respawnX, changeRespawn.respawnY, player.position.z);
             anim.ResetTrigger("death");
             anim.SetTrigger("respawn");
             rb.bodyType = RigidbodyType2D.Dynamic;
