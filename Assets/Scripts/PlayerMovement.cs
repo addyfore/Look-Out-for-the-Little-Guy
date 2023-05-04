@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDoubleJumping = false;
     private bool isJumping = false;
     private bool isFalling;
+    private float maxFallingSpeed = 15f;
     private float jumpCounter;
 
     private bool canDash = true;
@@ -88,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         dirX = Input.GetAxisRaw("Horizontal");
 
         // Sets the velocity of the player
-        rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(dirX * moveSpeed, Mathf.Clamp(rb.velocity.y, -maxFallingSpeed, float.MaxValue));
 
         // Establishing coyote time and a jump buffer
         if (IsGrounded())
@@ -114,6 +115,12 @@ public class PlayerMovement : MonoBehaviour
             isJumping = false;
             isDoubleJumping = false;
             tr.emitting = false;
+        }
+
+        if (IsGrounded() || IsWalled())
+        {
+            canDash = true;
+            rb.gravityScale = originalGravity;
         }
 
         // Jump logic
@@ -270,7 +277,6 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = originalGravity;
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
-        canDash = true;
     }
 
     /* After double jumping, return to the falling state

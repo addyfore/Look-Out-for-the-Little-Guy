@@ -24,6 +24,7 @@ public class ItemCollector : MonoBehaviour
             collectionSoundEffect.Play();
             Destroy(collision.gameObject);
             cards++;
+            playerLife.numLives++;
             cardsText.text = "Cards:" + cards + "/5";
         }
     }
